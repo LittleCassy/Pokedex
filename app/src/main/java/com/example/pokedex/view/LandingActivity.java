@@ -6,11 +6,9 @@ import android.os.Handler;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pokedex.R;
+import com.example.pokedex.controller.API;
 
 public class LandingActivity extends AppCompatActivity {
 
@@ -20,9 +18,9 @@ public class LandingActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_landing);
 
+        API.obtainAllPokemon(this);
 
-        new Handler().postDelayed(new Runnable()
-        {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 startActivity(new Intent(LandingActivity.this, MainMenu.class));

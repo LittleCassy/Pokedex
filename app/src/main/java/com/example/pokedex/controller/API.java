@@ -3,7 +3,6 @@ package com.example.pokedex.controller;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Debug;
 import android.os.StrictMode;
 import android.util.Log;
 
@@ -23,45 +22,21 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class API {
 
-    ArrayList<Pokemon> myPokedex = new ArrayList<>();
+    public static ArrayList<Pokemon> myPokedex = new ArrayList<>();
+    private static String[] fullPokeList = new String[1025];
+    private static String[] fullURLList = new String[1025];
 
-
-    void APICall(String input, Context ct){
-        RequestQueue queue = Volley.newRequestQueue(ct);
-        String url = "https://pokeapi.co/api/v2/pokemon/"+input.toLowerCase();
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jObj = new JSONObject(response);
-                            jObj.getJSONArray("results").getJSONObject(0).get("name");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-
-        queue.add(stringRequest);
-    }
-
-    public static void getAllPokemon(Context ct){
+    public static void obtainAllPokemon(Context ct){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
         StrictMode.setThreadPolicy(policy);
 
         RequestQueue queue = Volley.newRequestQueue(ct);
-        String url = "https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0";
+        String url = "https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -70,8 +45,8 @@ public class API {
                         try {
                             JSONObject jObj = new JSONObject(response);
                             for (int i = 0; i < jObj.getJSONArray("results").length(); i++) {
-                                jObj.getJSONArray("results").getJSONObject(i).get("name");
-                                System.out.println(jObj.getJSONArray("results").getJSONObject(i).get("name"));
+                                fullPokeList[i] = jObj.getJSONArray("results").getJSONObject(i).getString("name");
+                                fullURLList[i] = jObj.getJSONArray("results").getJSONObject(i).getString("url");
                             }
 
                         } catch (JSONException e) {
@@ -88,15 +63,27 @@ public class API {
         queue.add(stringRequest);
     }
 
-    void getSinglePokemon(String url, Context ct){
-        RequestQueue queue = Volley.newRequestQueue(ct);
+    public static void gatherAllPokemon(Context ct){
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        RequestQueue queue = Volley.newRequestQueue(ct);
+        queue.stop();
+
+        for (int i = 0; i < fullPokeList.length; i++) {
+            queue.add(gatherPokemon(fullURLList[i]));
+        }
+
+        queue.start();
+    }
+
+    static StringRequest gatherPokemon(String URL){
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
                             JSONObject jObj = new JSONObject(response);
+                            myPokedex.add(new Pokemon(jObj.getString("name"), jObj.getInt("id")));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -109,11 +96,8 @@ public class API {
             }
         });
 
-        queue.add(stringRequest);
-    }
 
-    void savePokemon(JSONObject pokemonToAdd, Context ct){
-
+        return stringRequest;
     }
 
     Bitmap getBitmapFromURL(String src) {
@@ -135,4 +119,11 @@ public class API {
     }
 
 
+}
+
+class PokemonIDComparator implements Comparator<Pokemon> {
+    @Override
+    public int compare(Pokemon p1, Pokemon p2) {
+        return p1.getNumber() - p2.getNumber();
+    }
 }
