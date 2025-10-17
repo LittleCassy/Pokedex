@@ -26,6 +26,6 @@ public class LandingActivity extends AppCompatActivity {
                 startActivity(new Intent(LandingActivity.this, MainMenu.class));
                 finish();
             }
-        }, 3000);
+        }, 1500);
     }
 }

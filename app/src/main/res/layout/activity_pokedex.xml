@@ -7,4 +7,25 @@
     android:layout_height="match_parent"
     tools:context=".view.PokedexActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteY="40dp">
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/myGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="39dp"
+            android:fadeScrollbars="true"
+            android:isScrollContainer="true"
+            android:overScrollMode="always"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            app:alignmentMode="alignBounds"
+            app:columnCount="3"
+            app:layout_wrapBehaviorInParent="included">
+
+        </androidx.gridlayout.widget.GridLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

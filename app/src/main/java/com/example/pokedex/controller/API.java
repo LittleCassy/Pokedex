@@ -1,10 +1,7 @@
 package com.example.pokedex.controller;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.StrictMode;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,18 +14,14 @@ import com.example.pokedex.model.Pokemon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class API {
 
-    public static ArrayList<Pokemon> myPokedex = new ArrayList<>();
-    private static String[] fullPokeList = new String[1025];
-    private static String[] fullURLList = new String[1025];
+
+    static ArrayList<Pokemon> myPokedex = new ArrayList<>();
+    private static String[] fullPokeList = new String[1024];
+    private static String[] fullURLList = new String[1024];
 
     public static void obtainAllPokemon(Context ct){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -36,7 +29,7 @@ public class API {
         StrictMode.setThreadPolicy(policy);
 
         RequestQueue queue = Volley.newRequestQueue(ct);
-        String url = "https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0";
+        String url = "https://pokeapi.co/api/v2/pokemon?limit=1024&offset=0";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -63,19 +56,19 @@ public class API {
         queue.add(stringRequest);
     }
 
-    public static void gatherAllPokemon(Context ct){
+    public static void gatherAllPokemonInfo(Context ct){
 
         RequestQueue queue = Volley.newRequestQueue(ct);
         queue.stop();
 
         for (int i = 0; i < fullPokeList.length; i++) {
-            queue.add(gatherPokemon(fullURLList[i]));
+            queue.add(gatherIndividualPokemonInfo(fullURLList[i]));
         }
 
         queue.start();
     }
 
-    static StringRequest gatherPokemon(String URL){
+    static StringRequest gatherIndividualPokemonInfo(String URL){
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
@@ -83,7 +76,7 @@ public class API {
                     public void onResponse(String response) {
                         try {
                             JSONObject jObj = new JSONObject(response);
-                            myPokedex.add(new Pokemon(jObj.getString("name"), jObj.getInt("id")));
+                            myPokedex.add(new Pokemon(jObj.getString("name"), jObj.getJSONObject("sprites").getString("front_default"), jObj.getInt("id")));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -96,34 +89,11 @@ public class API {
             }
         });
 
-
         return stringRequest;
     }
 
-    Bitmap getBitmapFromURL(String src) {
-        try {
-            Log.e("src",src);
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            Log.e("Bitmap","returned");
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("Exception",e.getMessage());
-            return null;
-        }
+    public static ArrayList<Pokemon> getMyPokedex() {
+        return myPokedex;
     }
 
-
-}
-
-class PokemonIDComparator implements Comparator<Pokemon> {
-    @Override
-    public int compare(Pokemon p1, Pokemon p2) {
-        return p1.getNumber() - p2.getNumber();
-    }
 }
