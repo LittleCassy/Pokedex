@@ -20,8 +20,8 @@ public class API {
 
 
     static ArrayList<Pokemon> myPokedex = new ArrayList<>();
-    private static String[] fullPokeList = new String[1024];
-    private static String[] fullURLList = new String[1024];
+    private static String[] fullPokeList = new String[1028];
+    private static String[] fullURLList = new String[1028];
 
     public static void obtainAllPokemon(Context ct){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -29,7 +29,7 @@ public class API {
         StrictMode.setThreadPolicy(policy);
 
         RequestQueue queue = Volley.newRequestQueue(ct);
-        String url = "https://pokeapi.co/api/v2/pokemon?limit=1024&offset=0";
+        String url = "https://pokeapi.co/api/v2/pokemon?limit=1028&offset=0";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -40,6 +40,8 @@ public class API {
                             for (int i = 0; i < jObj.getJSONArray("results").length(); i++) {
                                 fullPokeList[i] = jObj.getJSONArray("results").getJSONObject(i).getString("name");
                                 fullURLList[i] = jObj.getJSONArray("results").getJSONObject(i).getString("url");
+
+
                             }
 
                         } catch (JSONException e) {

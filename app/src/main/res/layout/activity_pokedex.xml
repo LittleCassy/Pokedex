@@ -8,9 +8,9 @@
     tools:context=".view.PokedexActivity">
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteY="40dp">
+        android:layout_width="408dp"
+        android:layout_height="893dp"
+        tools:layout_editor_absoluteY="-2dp">
 
         <androidx.gridlayout.widget.GridLayout
             android:id="@+id/myGrid"
@@ -23,9 +23,7 @@
             android:scrollbarAlwaysDrawVerticalTrack="true"
             app:alignmentMode="alignBounds"
             app:columnCount="3"
-            app:layout_wrapBehaviorInParent="included">
-
-        </androidx.gridlayout.widget.GridLayout>
+            app:layout_wrapBehaviorInParent="included" />
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
